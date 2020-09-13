@@ -16,7 +16,6 @@ provider:
   role: ${self:custom.role}
 
 custom:
-  id: 507512795508
   prefix: ${self:service}-${opt:stage, self:provider.stage, 'dev'}
   stage: ${opt:stage, self:provider.stage, 'dev'}
   inboxBucket: ${self:custom.prefix}-inbox-bucket
