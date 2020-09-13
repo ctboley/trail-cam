@@ -1,0 +1,31 @@
+org: ctboley
+app: trail-cam
+service: trail-cam
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs12.x
+  memorySize: 512
+  timeout: 10
+  stackName: ${self:service}-${opt:stage, self:provider.stage, 'dev'}
+  role: ${self:custom.role}
+
+custom:
+  id: 507512795508
+  prefix: ${self:service}-${opt:stage, self:provider.stage, 'dev'}
+  stage: ${opt:stage, self:provider.stage, 'dev'}
+  inboxBucket: ${self:custom.prefix}-inbox-bucket
+  photoBucket: ${self:custom.prefix}-photo-bucket
+  role: ExecutionRole
+
+functions:
+  - ${file(yaml/functions.yml)}
+
+resources:
+  - ${file(yaml/iam.yml)}
+  - ${file(yaml/s3.yml)}

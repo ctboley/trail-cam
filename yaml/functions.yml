@@ -1,0 +1,18 @@
+imagga:
+  name: ${self:custom.prefix}-imagga
+  handler: src/handler.handler
+  events:
+    - eventBridge:
+        pattern:
+          source:
+            - aws.s3
+          detail-type:
+            - "AWS API Call via CloudTrail"
+          detail:
+            eventSource:
+              - s3.amazonaws.com
+            eventName:
+              - PutObject
+            requestParameters:
+              bucketName:
+                - ${self:custom.inboxBucket}

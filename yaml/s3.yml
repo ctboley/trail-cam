@@ -1,0 +1,30 @@
+Resources:
+  PhotoBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.photoBucket}
+
+  InboxBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.inboxBucket}
+
+  InboxBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: InboxBucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:PutObject
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:s3:::"
+                  - Ref: "InboxBucket"
+                  - "/*"
+            Principal:
+              Service:
+                - ses.amazonaws.com
