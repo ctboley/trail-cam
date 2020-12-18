@@ -1,0 +1,9 @@
+handler:
+  name: ${self:custom.prefix}-handler
+  handler: src/handler.handler
+  events:
+    - s3:
+        bucket: ${self:custom.inboxBucket}
+        event: s3:ObjectCreated:*
+        rules:
+          - prefix: uploads/

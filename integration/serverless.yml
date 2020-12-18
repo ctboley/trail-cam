@@ -1,10 +1,6 @@
 org: ctboley
-app: trail-cam
-service: trail-cam
-
-plugins:
-  - serverless-plugin-typescript
-  - serverless-offline
+app: trail-cam-integration
+service: trail-cam-integration
 
 provider:
   name: aws
