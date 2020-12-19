@@ -6,4 +6,4 @@ handler:
         bucket: ${self:custom.inboxBucket}
         event: s3:ObjectCreated:*
         rules:
-          - prefix: uploads/
+          - prefix: inbox/

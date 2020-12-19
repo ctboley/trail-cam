@@ -8,4 +8,4 @@ inputs:
     hook: npm run build
     dist: build
   # Enable this when you want to set a custom domain.
-  # domain: ${env:domain}
+  domain: ${env:domain}

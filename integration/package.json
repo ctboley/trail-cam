@@ -8,5 +8,9 @@
     "deploy": "serverless deploy --verbose"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.814.0",
+    "mailparser": "^3.0.1"
+  }
 }
