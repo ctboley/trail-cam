@@ -8,23 +8,23 @@ inputs:
   deletionPolicy: retain
   # Simple, single-table design
   attributeDefinitions:
-    - AttributeName: email
+    - AttributeName: hk
       AttributeType: S
-    - AttributeName: type
+    - AttributeName: sk
       AttributeType: S
-    - AttributeName: id
+    - AttributeName: sk2
       AttributeType: S
   keySchema:
-    - AttributeName: email
+    - AttributeName: hk
       KeyType: HASH
-    - AttributeName: type
+    - AttributeName: sk
       KeyType: RANGE
   globalSecondaryIndexes:
     - IndexName: gsi1
       KeySchema:
-        - AttributeName: id
+        - AttributeName: sk2
           KeyType: HASH
-        - AttributeName: type
+        - AttributeName: sk
           KeyType: RANGE
       Projection:
         ProjectionType: ALL
