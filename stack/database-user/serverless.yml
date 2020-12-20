@@ -1,5 +1,5 @@
 component: aws-dynamodb
-name: trail-cam-database
+name: trail-cam-user-table
 
 inputs:
   name: ${name}-${stage}
@@ -8,23 +8,23 @@ inputs:
   deletionPolicy: retain
   # Simple, single-table design
   attributeDefinitions:
-    - AttributeName: hk
+    - AttributeName: email
       AttributeType: S
-    - AttributeName: sk
+    - AttributeName: type
       AttributeType: S
-    - AttributeName: sk2
+    - AttributeName: id
       AttributeType: S
   keySchema:
-    - AttributeName: hk
+    - AttributeName: email
       KeyType: HASH
-    - AttributeName: sk
+    - AttributeName: type
       KeyType: RANGE
   globalSecondaryIndexes:
     - IndexName: gsi1
       KeySchema:
-        - AttributeName: sk2
+        - AttributeName: id
           KeyType: HASH
-        - AttributeName: sk
+        - AttributeName: type
           KeyType: RANGE
       Projection:
         ProjectionType: ALL
