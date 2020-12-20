@@ -1,19 +1,8 @@
 Resources:
-  PhotoBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: ${self:custom.photoBucket}
-
-  InboxBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: ${self:custom.inboxBucket}
-
   InboxBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket:
-        Ref: InboxBucket
+      Bucket: ${self:custom.inboxBucket}
       PolicyDocument:
         Statement:
           - Action:
@@ -23,7 +12,7 @@ Resources:
               Fn::Join:
                 - ""
                 - - "arn:aws:s3:::"
-                  - Ref: "InboxBucket"
+                  - "${self:custom.inboxBucket}"
                   - "/*"
             Principal:
               Service:

@@ -1,0 +1,19 @@
+component: express
+name: trail-cam-api
+
+inputs:
+  # Express application source code.
+  src: ./
+  # Permissions required for the AWS Lambda function to interact with other resources
+  roleName: ${output:trail-cam-permissions.name}
+  # Enable this when you want to set a custom domain.
+  # domain: api.${env:domain}
+  # Environment variables
+  env:
+    # AWS DynamoDB Table name. Needed for the code to access it.
+    userDb: ${output:trail-cam-user-table.name}
+    imageDb: ${output:trail-cam-image-table.name}
+    # AWS DynamoDB Table Index name. Needed for the code to access it.
+    userDbIndex1: ${output:trail-cam-user-table.indexes.gsi1.name}
+    # A secret token to sign the JWT tokens with.
+    tokenSecret: secret_1234 # Change to secret via environment variable: ${env:tokenSecret}
