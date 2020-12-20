@@ -24,5 +24,6 @@ inputs:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - ${output:trail-cam-database.arn}
-        - ${output:trail-cam-database.arn}/index/*
+        - ${output:trail-cam-user-table.arn}
+        - ${output:trail-cam-user-table.arn}/index/*
+        - ${output:trail-cam-image-table.arn}

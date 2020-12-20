@@ -11,9 +11,9 @@ inputs:
   # Environment variables
   env:
     # AWS DynamoDB Table name. Needed for the code to access it.
-    userDb: ${output:trail-cam-database.name}
-    imageDb: ${output:trail-cam-database.name}
+    userDb: ${output:trail-cam-user-table.name}
+    imageDb: ${output:trail-cam-image-table.name}
     # AWS DynamoDB Table Index name. Needed for the code to access it.
-    userDbIndex1: ${output:trail-cam-database.indexes.gsi1.name}
+    userDbIndex1: ${output:trail-cam-user-table.indexes.gsi1.name}
     # A secret token to sign the JWT tokens with.
     tokenSecret: secret_1234 # Change to secret via environment variable: ${env:tokenSecret}
