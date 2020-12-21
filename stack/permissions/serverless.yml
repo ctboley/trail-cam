@@ -23,6 +23,7 @@ inputs:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:Scan
       Resource:
         - ${output:trail-cam-user-table.arn}
         - ${output:trail-cam-user-table.arn}/index/*

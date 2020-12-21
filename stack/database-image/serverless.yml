@@ -10,10 +10,6 @@ inputs:
   attributeDefinitions:
     - AttributeName: hk
       AttributeType: S
-    - AttributeName: sk
-      AttributeType: S
   keySchema:
     - AttributeName: hk
       KeyType: HASH
-    - AttributeName: sk
-      KeyType: RANGE

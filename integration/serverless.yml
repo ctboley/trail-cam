@@ -17,6 +17,7 @@ custom:
   inboxBucket: ${self:custom.prefix}-inbox-bucket
   photoBucket: ${self:custom.prefix}-photo-bucket
   role: ExecutionRole
+  imageDb: trail-cam-image-table-${self:custom.stage}
 
 functions:
   - ${file(yaml/functions.yml)}

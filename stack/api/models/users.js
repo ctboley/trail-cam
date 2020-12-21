@@ -45,6 +45,7 @@ const register = async (user = {}) => {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       password: user.password,
+      favorites: [],
     },
   };
 
@@ -125,9 +126,14 @@ const convertToPublicFormat = (user = {}) => {
   return user;
 };
 
+const addFavorite = () => {
+  throw new Error("Method not implemented");
+};
+
 module.exports = {
   register,
   getByEmail,
   getById,
   convertToPublicFormat,
+  addFavorite,
 };
