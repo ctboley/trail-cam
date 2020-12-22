@@ -126,8 +126,26 @@ const convertToPublicFormat = (user = {}) => {
   return user;
 };
 
-const addFavorite = () => {
-  throw new Error("Method not implemented");
+const addFavorite = async (user = {}, image = {}) => {
+  if (!user.email) {
+    throw new Error(`"User id" is required`);
+  }
+  if (!user.favorites) {
+    throw new Error(`"User favorites" is required`);
+  }
+  if (!image.id) {
+    throw new Error(`"Image id" is required`);
+  }
+
+  const params = {
+    TableName: process.env.userDb,
+    Key: { hk: user.email, sk: "user" },
+    UpdateExpression: "set #favorites = :favorites",
+    ExpressionAttributeNames: { "#favorites": "favorites" },
+    ExpressionAttributeValues: { ":favorites": user.favorites.concat({ imageId: image.id }) },
+  };
+
+  await dynamodb.update(params).promise();
 };
 
 module.exports = {

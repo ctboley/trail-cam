@@ -75,8 +75,17 @@ const get = async (req, res, next) => {
   res.json({ user });
 };
 
-const addFavorite = (req, res) => {
-  throw new Error("Method not implemented");
+const addFavorite = async (req, res) => {
+  try {
+    if (req.user.favorites.find((obj) => obj.imageId === req.body.id)) {
+      res.status(400).send({ message: "Favorite already exits" });
+    } else {
+      await users.addFavorite(req.user, req.body);
+      res.status(200).send({ message: "Successfully added favorite" });
+    }
+  } catch (error) {
+    return res.status(400).send({ error: error.message });
+  }
 };
 
 module.exports = {

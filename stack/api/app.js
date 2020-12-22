@@ -67,7 +67,7 @@ app.get(`/images/:id`, asyncHandler(images.getOne));
 
 app.post(`/user`, passport.authenticate("jwt", { session: false }), asyncHandler(users.get));
 
-app.post(`user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.addFavorite));
+app.post(`/user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.addFavorite));
 
 /**
  * Routes - Catch-All
