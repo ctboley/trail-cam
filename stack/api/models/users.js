@@ -149,7 +149,24 @@ const addFavorite = async (user = {}, image = {}) => {
 };
 
 const changePassword = async (user = {}, password) => {
-  throw new Error("Method not implemented");
+  if (!user.email) {
+    throw new Error(`"User id" is required`);
+  }
+  if (!password) {
+    throw new Error(`"Password" is required`);
+  }
+
+  const encryptedPassword = utils.hashPassword(password);
+
+  const params = {
+    TableName: process.env.userDb,
+    Key: { hk: user.email, sk: "user" },
+    UpdateExpression: "set #password = :password",
+    ExpressionAttributeNames: { "#password": "password" },
+    ExpressionAttributeValues: { ":password": encryptedPassword },
+  };
+
+  await dynamodb.update(params).promise();
 };
 
 module.exports = {

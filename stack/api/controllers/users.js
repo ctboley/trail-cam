@@ -139,6 +139,11 @@ const receiveNewPassword = async (req, res) => {
   } catch (error) {
     return res.status(500).send({ error: error.message });
   }
+  res.status(202).send({ message: "Password changed successfully" });
+};
+
+const updateFavorites = async (req, res) => {
+  res.status(500).send({ error: "Not Implemented" });
 };
 
 module.exports = {
@@ -148,4 +153,5 @@ module.exports = {
   addFavorite,
   sendPasswordResetEmail,
   receiveNewPassword,
+  updateFavorites,
 };

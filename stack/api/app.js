@@ -51,9 +51,9 @@ app.post(`/users/register`, asyncHandler(users.register));
 
 app.post(`/users/login`, asyncHandler(users.login));
 
-app.post(`/reset-password/user`, asyncHandler(users.sendPasswordResetEmail));
+app.post(`/reset_password/user`, asyncHandler(users.sendPasswordResetEmail));
 
-app.post(`/new-password/:userId/:token`, asyncHandler(users.receiveNewPassword));
+app.post(`/new_password/:userId/:token`, asyncHandler(users.receiveNewPassword));
 
 app.get(`/test/`, (req, res) => {
   res.status(200).send("Request received");
@@ -72,6 +72,8 @@ app.get(`/images/:id`, asyncHandler(images.getOne));
 app.post(`/user`, passport.authenticate("jwt", { session: false }), asyncHandler(users.get));
 
 app.post(`/user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.addFavorite));
+
+app.patch(`/user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.updateFavorites));
 
 /**
  * Routes - Catch-All
