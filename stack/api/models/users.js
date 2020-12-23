@@ -128,10 +128,10 @@ const convertToPublicFormat = (user = {}) => {
 
 const addFavorite = async (user = {}, image = {}) => {
   if (!user.email) {
-    throw new Error(`"User id" is required`);
+    throw new Error(`"email" is required`);
   }
   if (!user.favorites) {
-    throw new Error(`"User favorites" is required`);
+    throw new Error(`"favorites" is required`);
   }
   if (!image.id) {
     throw new Error(`"Image id" is required`);
@@ -148,12 +148,31 @@ const addFavorite = async (user = {}, image = {}) => {
   await dynamodb.update(params).promise();
 };
 
+const removeFavorite = async (user = {}, favoriteId) => {
+  if (!user.email) {
+    throw new Error(`"email" is required`);
+  }
+  if (!favoriteId) {
+    throw new Error(`"favorite id" is required`);
+  }
+
+  const params = {
+    TableName: process.env.userDb,
+    Key: { hk: user.email, sk: "user" },
+    UpdateExpression: "set #favorites = :favorites",
+    ExpressionAttributeNames: { "#favorites": "favorites" },
+    ExpressionAttributeValues: { ":favorites": user.favorites.filter((favorite) => favorite.imageId !== favoriteId) },
+  };
+
+  await dynamodb.update(params).promise();
+};
+
 const changePassword = async (user = {}, password) => {
   if (!user.email) {
-    throw new Error(`"User id" is required`);
+    throw new Error(`"email" is required`);
   }
   if (!password) {
-    throw new Error(`"Password" is required`);
+    throw new Error(`"password" is required`);
   }
 
   const encryptedPassword = utils.hashPassword(password);
@@ -175,5 +194,6 @@ module.exports = {
   getById,
   convertToPublicFormat,
   addFavorite,
+  removeFavorite,
   changePassword,
 };

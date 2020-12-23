@@ -88,6 +88,20 @@ const addFavorite = async (req, res) => {
   }
 };
 
+const removeFavorite = async (req, res) => {
+  const { favoriteId } = req.params;
+  try {
+    const fav = req.user.favorites.find((favorite) => favorite.imageId === favoriteId);
+    if (!fav) {
+      return res.status(404).send({ message: "Not currently a favorite" });
+    }
+    await users.removeFavorite(req.user, favoriteId);
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+  res.status(200).send({ message: "Favorites updated" });
+};
+
 const usePasswordHashToMakeToken = (user) => {
   const secret = user.password + "-" + user.createdAt;
   const token = jwt.sign(user, secret, {
@@ -142,16 +156,12 @@ const receiveNewPassword = async (req, res) => {
   res.status(202).send({ message: "Password changed successfully" });
 };
 
-const updateFavorites = async (req, res) => {
-  res.status(500).send({ error: "Not Implemented" });
-};
-
 module.exports = {
   register,
   login,
   get,
   addFavorite,
+  removeFavorite,
   sendPasswordResetEmail,
   receiveNewPassword,
-  updateFavorites,
 };

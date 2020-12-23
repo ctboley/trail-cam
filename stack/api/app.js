@@ -73,7 +73,11 @@ app.post(`/user`, passport.authenticate("jwt", { session: false }), asyncHandler
 
 app.post(`/user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.addFavorite));
 
-app.patch(`/user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.updateFavorites));
+app.patch(
+  `/user/favorite/:favoriteId`,
+  passport.authenticate("jwt", { session: false }),
+  asyncHandler(users.removeFavorite)
+);
 
 /**
  * Routes - Catch-All
