@@ -4,6 +4,11 @@
 
 const { images } = require("../models");
 
+/**
+ * Insert an image
+ * @param {*} req
+ * @param {*} res
+ */
 const insert = async (req, res) => {
   try {
     await images.insert(req.body);
@@ -13,6 +18,11 @@ const insert = async (req, res) => {
   res.status(200).send({ message: "Successfully inserted image", image: req.body });
 };
 
+/**
+ * Get a set of images
+ * @param {*} req
+ * @param {*} res
+ */
 const get = async (req, res) => {
   try {
     const imgs = await images.get();
@@ -25,6 +35,11 @@ const get = async (req, res) => {
   }
 };
 
+/**
+ * Get an image
+ * @param {*} req
+ * @param {*} res
+ */
 const getOne = async (req, res) => {
   try {
     const image = await images.getById(req.params.id);

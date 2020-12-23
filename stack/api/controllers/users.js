@@ -75,6 +75,11 @@ const get = async (req, res, next) => {
   res.send({ user });
 };
 
+/**
+ * Add a favorite
+ * @param {*} req
+ * @param {*} res
+ */
 const addFavorite = async (req, res) => {
   try {
     if (req.user.favorites.find((obj) => obj.imageId === req.body.id)) {
@@ -88,6 +93,11 @@ const addFavorite = async (req, res) => {
   }
 };
 
+/**
+ * Remove a favorite
+ * @param {*} req
+ * @param {*} res
+ */
 const removeFavorite = async (req, res) => {
   const { favoriteId } = req.params;
   try {
@@ -102,6 +112,11 @@ const removeFavorite = async (req, res) => {
   res.status(200).send({ message: "Favorites updated" });
 };
 
+/**
+ * Create a token from hashed password
+ * @param {*} user
+ * @returns {string} token
+ */
 const usePasswordHashToMakeToken = (user) => {
   const secret = user.password + "-" + user.createdAt;
   const token = jwt.sign(user, secret, {
@@ -110,6 +125,11 @@ const usePasswordHashToMakeToken = (user) => {
   return token;
 };
 
+/**
+ * Send a password reset email
+ * @param {*} req
+ * @param {*} res
+ */
 const sendPasswordResetEmail = async (req, res) => {
   const { email } = req.body;
   let user;
@@ -136,6 +156,11 @@ const sendPasswordResetEmail = async (req, res) => {
   res.status(200).send({ message: "Reset password email sent" });
 };
 
+/**
+ * Change user password
+ * @param {*} req
+ * @param {*} res
+ */
 const receiveNewPassword = async (req, res) => {
   const { userId, token } = req.params;
   const { password } = req.body;

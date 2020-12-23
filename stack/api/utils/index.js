@@ -32,6 +32,13 @@ const comparePassword = (candidatePassword, trustedPassword) => {
   return bcrypt.compareSync(candidatePassword, trustedPassword);
 };
 
+/**
+ * Send a email with AWS SES
+ * @param {string} sender
+ * @param {string} recipient
+ * @param {string} subject
+ * @param {string} message
+ */
 const sendEmail = async (sender, recipient, subject, message) => {
   const params = {
     Source: sender,

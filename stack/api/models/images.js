@@ -35,6 +35,9 @@ const insert = async (image = {}) => {
   await dynamodb.put(params).promise();
 };
 
+/**
+ * Get a set of images
+ */
 const get = async () => {
   const params = {
     TableName: process.env.imageDb,
@@ -72,6 +75,10 @@ const getById = async (id) => {
   return image;
 };
 
+/**
+ * Convert image record to public format
+ * @param {*} image
+ */
 const convertToReadableFormat = (image = {}) => {
   image.id = image.hk || null;
   image.createdAt = new Date(image.createdAt).toISOString() || null;

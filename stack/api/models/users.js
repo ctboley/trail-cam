@@ -56,7 +56,6 @@ const register = async (user = {}) => {
  * Get user by email address
  * @param {string} email
  */
-
 const getByEmail = async (email) => {
   // Validate
   if (!email) {
@@ -87,7 +86,6 @@ const getByEmail = async (email) => {
  * Get user by id
  * @param {string} id
  */
-
 const getById = async (id) => {
   // Validate
   if (!id) {
@@ -126,6 +124,11 @@ const convertToPublicFormat = (user = {}) => {
   return user;
 };
 
+/**
+ * Insert a favorite
+ * @param {*} user
+ * @param {*} image
+ */
 const addFavorite = async (user = {}, image = {}) => {
   if (!user.email) {
     throw new Error(`"email" is required`);
@@ -148,6 +151,11 @@ const addFavorite = async (user = {}, image = {}) => {
   await dynamodb.update(params).promise();
 };
 
+/**
+ * Remove a favorite
+ * @param {*} user
+ * @param {*} favoriteId
+ */
 const removeFavorite = async (user = {}, favoriteId) => {
   if (!user.email) {
     throw new Error(`"email" is required`);
@@ -167,6 +175,11 @@ const removeFavorite = async (user = {}, favoriteId) => {
   await dynamodb.update(params).promise();
 };
 
+/**
+ * Change user password
+ * @param {*} user
+ * @param {string} password
+ */
 const changePassword = async (user = {}, password) => {
   if (!user.email) {
     throw new Error(`"email" is required`);
