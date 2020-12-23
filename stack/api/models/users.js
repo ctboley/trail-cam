@@ -148,10 +148,15 @@ const addFavorite = async (user = {}, image = {}) => {
   await dynamodb.update(params).promise();
 };
 
+const changePassword = async (user = {}, password) => {
+  throw new Error("Method not implemented");
+};
+
 module.exports = {
   register,
   getByEmail,
   getById,
   convertToPublicFormat,
   addFavorite,
+  changePassword,
 };

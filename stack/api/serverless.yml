@@ -17,3 +17,5 @@ inputs:
     userDbIndex1: ${output:trail-cam-user-table.indexes.gsi1.name}
     # A secret token to sign the JWT tokens with.
     tokenSecret: ${env:tokenSecret}
+    domain: ${env:domain}
+    email: ${env:email}

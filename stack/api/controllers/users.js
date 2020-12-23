@@ -4,7 +4,7 @@
 
 const jwt = require("jsonwebtoken");
 const { users } = require("../models");
-const { comparePassword } = require("../utils");
+const { comparePassword, sendEmail } = require("../utils");
 
 /**
  * Save
@@ -16,7 +16,7 @@ const register = async (req, res, next) => {
   try {
     await users.register(req.body);
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(400).send({ error: error.message });
   }
 
   let user;
@@ -31,7 +31,7 @@ const register = async (req, res, next) => {
     expiresIn: 604800, // 1 week
   });
 
-  res.json({ message: "Authentication successful", token });
+  res.send({ message: "Authentication successful", token });
 };
 
 /**
@@ -61,7 +61,7 @@ const login = async (req, res, next) => {
     expiresIn: 604800, // 1 week
   });
 
-  res.json({ message: "Authentication successful", token });
+  res.send({ message: "Authentication successful", token });
 };
 
 /**
@@ -72,7 +72,7 @@ const login = async (req, res, next) => {
  */
 const get = async (req, res, next) => {
   const user = users.convertToPublicFormat(req.user);
-  res.json({ user });
+  res.send({ user });
 };
 
 const addFavorite = async (req, res) => {
@@ -88,9 +88,64 @@ const addFavorite = async (req, res) => {
   }
 };
 
+const usePasswordHashToMakeToken = (user) => {
+  const secret = user.password + "-" + user.createdAt;
+  const token = jwt.sign(user, secret, {
+    expiresIn: 3600, // one hour
+  });
+  return token;
+};
+
+const sendPasswordResetEmail = async (req, res) => {
+  const { email } = req.body;
+  let user;
+  try {
+    user = await users.getByEmail(email);
+    if (!user) {
+      return res.status(404).send({ message: "No user with that email" });
+    }
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+
+  const token = usePasswordHashToMakeToken(user);
+  const url = `https://${process.env.domain}/update-password/${user.id}/${token}`;
+
+  const sender = process.env.email;
+  const subject = "Trail Cam - Password Reset";
+  const message = `<p>Here is your password reset link,</p><a href=${url}>${url}</a>`;
+  try {
+    await sendEmail(sender, email, subject, message);
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+  res.status(200).send({ message: "Reset password email sent" });
+};
+
+const receiveNewPassword = async (req, res) => {
+  const { userId, token } = req.params;
+  const { password } = req.body;
+
+  try {
+    const user = await users.getById(userId);
+    if (!user) {
+      return res.status(404).send({ message: "Invalid user" });
+    }
+    const secret = user.password + "-" + user.createdAt;
+    const payload = jwt.decode(token, secret);
+    if (payload.id === user.id) {
+      await users.changePassword(user, password);
+    }
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   get,
   addFavorite,
+  sendPasswordResetEmail,
+  receiveNewPassword,
 };
