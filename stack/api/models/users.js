@@ -5,6 +5,7 @@
 const AWS = require("aws-sdk");
 const shortid = require("shortid");
 const utils = require("../utils");
+const moment = require("moment");
 
 const dynamodb = new AWS.DynamoDB.DocumentClient({
   region: process.env.AWS_REGION,
@@ -42,9 +43,10 @@ const register = async (user = {}) => {
       hk: user.email,
       sk: "user",
       sk2: shortid.generate(),
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: moment().toISOString(),
+      updatedAt: moment().toISOString(),
       password: user.password,
+      favorites: [],
     },
   };
 
@@ -55,7 +57,6 @@ const register = async (user = {}) => {
  * Get user by email address
  * @param {string} email
  */
-
 const getByEmail = async (email) => {
   // Validate
   if (!email) {
@@ -86,7 +87,6 @@ const getByEmail = async (email) => {
  * Get user by id
  * @param {string} id
  */
-
 const getById = async (id) => {
   // Validate
   if (!id) {
@@ -125,9 +125,92 @@ const convertToPublicFormat = (user = {}) => {
   return user;
 };
 
+/**
+ * Insert a favorite
+ * @param {*} user
+ * @param {*} image
+ */
+const addFavorite = async (user = {}, image = {}) => {
+  if (!user.email) {
+    throw new Error(`"email" is required`);
+  }
+  if (!user.favorites) {
+    throw new Error(`"favorites" is required`);
+  }
+  if (!image.id) {
+    throw new Error(`"Image id" is required`);
+  }
+  if (image.url) {
+    delete image.url;
+  }
+
+  const params = {
+    TableName: process.env.userDb,
+    Key: { hk: user.email, sk: "user" },
+    UpdateExpression: "set #favorites = :favorites",
+    ExpressionAttributeNames: { "#favorites": "favorites" },
+    ExpressionAttributeValues: { ":favorites": user.favorites.concat({ ...image }) },
+  };
+
+  await dynamodb.update(params).promise();
+};
+
+/**
+ * Remove a favorite
+ * @param {*} user
+ * @param {*} id
+ */
+const removeFavorite = async (user = {}, id) => {
+  if (!user.email) {
+    throw new Error(`"email" is required`);
+  }
+  if (!id) {
+    throw new Error(`"id" is required`);
+  }
+
+  const params = {
+    TableName: process.env.userDb,
+    Key: { hk: user.email, sk: "user" },
+    UpdateExpression: "set #favorites = :favorites",
+    ExpressionAttributeNames: { "#favorites": "favorites" },
+    ExpressionAttributeValues: { ":favorites": user.favorites.filter((favorite) => favorite.id !== id) },
+  };
+
+  await dynamodb.update(params).promise();
+};
+
+/**
+ * Change user password
+ * @param {*} user
+ * @param {string} password
+ */
+const changePassword = async (user = {}, password) => {
+  if (!user.email) {
+    throw new Error(`"email" is required`);
+  }
+  if (!password) {
+    throw new Error(`"password" is required`);
+  }
+
+  const encryptedPassword = utils.hashPassword(password);
+
+  const params = {
+    TableName: process.env.userDb,
+    Key: { hk: user.email, sk: "user" },
+    UpdateExpression: "set #password = :password",
+    ExpressionAttributeNames: { "#password": "password" },
+    ExpressionAttributeValues: { ":password": encryptedPassword },
+  };
+
+  await dynamodb.update(params).promise();
+};
+
 module.exports = {
   register,
   getByEmail,
   getById,
   convertToPublicFormat,
+  addFavorite,
+  removeFavorite,
+  changePassword,
 };

@@ -10,6 +10,17 @@ provider:
   timeout: 10
   stackName: ${self:service}-${opt:stage, self:provider.stage, 'dev'}
   role: ${self:custom.role}
+  s3:
+    InboxBucket:
+      name: ${self:custom.inboxBucket}
+      corsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+            AllowedOrigins:
+              - "*"
 
 custom:
   prefix: ${self:service}-${opt:stage, self:provider.stage, 'dev'}
@@ -17,6 +28,7 @@ custom:
   inboxBucket: ${self:custom.prefix}-inbox-bucket
   photoBucket: ${self:custom.prefix}-photo-bucket
   role: ExecutionRole
+  imageDb: trail-cam-image-table-${self:custom.stage}
 
 functions:
   - ${file(yaml/functions.yml)}

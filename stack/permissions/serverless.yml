@@ -4,7 +4,8 @@ name: trail-cam-permissions
 inputs:
   name: ${name}-${stage}
   region: us-east-1
-  service: lambda.amazonaws.com
+  service:
+    - lambda.amazonaws.com
   policy:
     # AWS Lambda function containing Express Logs and Assume Role access
     - Effect: Allow
@@ -27,3 +28,12 @@ inputs:
         - ${output:trail-cam-user-table.arn}
         - ${output:trail-cam-user-table.arn}/index/*
         - ${output:trail-cam-image-table.arn}
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - s3:Get*
+      Resource: "*"

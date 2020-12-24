@@ -16,4 +16,9 @@ inputs:
     # AWS DynamoDB Table Index name. Needed for the code to access it.
     userDbIndex1: ${output:trail-cam-user-table.indexes.gsi1.name}
     # A secret token to sign the JWT tokens with.
-    tokenSecret: secret_1234 # Change to secret via environment variable: ${env:tokenSecret}
+    tokenSecret: ${env:tokenSecret}
+    domain: ${env:domain}
+    email: ${env:email}
+    stage: ${env:stage}
+    # bucket: ${cf:trail-cam-integration-${env:stage}.InboxBucket}
+    bucket: ${env:bucket}
