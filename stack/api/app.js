@@ -55,15 +55,11 @@ app.post(`/reset_password/user`, asyncHandler(users.sendPasswordResetEmail));
 
 app.post(`/new_password/:userId/:token`, asyncHandler(users.receiveNewPassword));
 
-app.get(`/test/`, (req, res) => {
-  res.status(200).send("Request received");
-});
-
-// app.post(`/images`, asyncHandler(images.insert));
-
-app.get(`/images`, asyncHandler(images.get));
-
-app.get(`/images/:id`, asyncHandler(images.getOne));
+if (process.env.stage.toLowerCase() === "dev") {
+  app.get(`/test/`, (req, res) => {
+    res.status(200).send("Request received");
+  });
+}
 
 /**
  * Routes - Protected
@@ -73,11 +69,9 @@ app.post(`/user`, passport.authenticate("jwt", { session: false }), asyncHandler
 
 app.post(`/user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.addFavorite));
 
-app.patch(
-  `/user/favorite/:favoriteId`,
-  passport.authenticate("jwt", { session: false }),
-  asyncHandler(users.removeFavorite)
-);
+app.patch(`/user/favorite/:id`, passport.authenticate("jwt", { session: false }), asyncHandler(users.removeFavorite));
+
+app.get(`/images`, passport.authenticate("jwt", { session: false }), asyncHandler(images.get));
 
 /**
  * Routes - Catch-All

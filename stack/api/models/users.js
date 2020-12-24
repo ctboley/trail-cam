@@ -5,6 +5,7 @@
 const AWS = require("aws-sdk");
 const shortid = require("shortid");
 const utils = require("../utils");
+const moment = require("moment");
 
 const dynamodb = new AWS.DynamoDB.DocumentClient({
   region: process.env.AWS_REGION,
@@ -42,8 +43,8 @@ const register = async (user = {}) => {
       hk: user.email,
       sk: "user",
       sk2: shortid.generate(),
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: moment().toISOString(),
+      updatedAt: moment().toISOString(),
       password: user.password,
       favorites: [],
     },
@@ -139,13 +140,16 @@ const addFavorite = async (user = {}, image = {}) => {
   if (!image.id) {
     throw new Error(`"Image id" is required`);
   }
+  if (image.url) {
+    delete image.url;
+  }
 
   const params = {
     TableName: process.env.userDb,
     Key: { hk: user.email, sk: "user" },
     UpdateExpression: "set #favorites = :favorites",
     ExpressionAttributeNames: { "#favorites": "favorites" },
-    ExpressionAttributeValues: { ":favorites": user.favorites.concat({ imageId: image.id }) },
+    ExpressionAttributeValues: { ":favorites": user.favorites.concat({ ...image }) },
   };
 
   await dynamodb.update(params).promise();
@@ -154,14 +158,14 @@ const addFavorite = async (user = {}, image = {}) => {
 /**
  * Remove a favorite
  * @param {*} user
- * @param {*} favoriteId
+ * @param {*} id
  */
-const removeFavorite = async (user = {}, favoriteId) => {
+const removeFavorite = async (user = {}, id) => {
   if (!user.email) {
     throw new Error(`"email" is required`);
   }
-  if (!favoriteId) {
-    throw new Error(`"favorite id" is required`);
+  if (!id) {
+    throw new Error(`"id" is required`);
   }
 
   const params = {
@@ -169,7 +173,7 @@ const removeFavorite = async (user = {}, favoriteId) => {
     Key: { hk: user.email, sk: "user" },
     UpdateExpression: "set #favorites = :favorites",
     ExpressionAttributeNames: { "#favorites": "favorites" },
-    ExpressionAttributeValues: { ":favorites": user.favorites.filter((favorite) => favorite.imageId !== favoriteId) },
+    ExpressionAttributeValues: { ":favorites": user.favorites.filter((favorite) => favorite.id !== id) },
   };
 
   await dynamodb.update(params).promise();

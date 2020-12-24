@@ -6,7 +6,11 @@ const bcrypt = require("bcryptjs");
 const AWS = require("aws-sdk");
 const { defaultConfiguration } = require("../app");
 
-const ses = new AWS.SES();
+const ses = new AWS.SES({ region: process.env.AWS_REGION });
+
+const s3 = new AWS.S3({
+  region: process.env.AWS_REGION,
+});
 
 /**
  * Validate email address
@@ -65,9 +69,27 @@ const sendEmail = async (sender, recipient, subject, message) => {
   await ses.sendEmail(params).promise();
 };
 
+/**
+ * Gets a signed s3 url
+ * @param {string} bucket
+ * @param {key} key
+ * @param {number} expires default is 1 hour
+ *
+ * @returns {string} signed url
+ */
+const generateSignedUrl = (bucket, key, expires = 3600) => {
+  const params = {
+    Bucket: bucket,
+    Key: key,
+    Expires: expires,
+  };
+  return s3.getSignedUrl("getObject", params);
+};
+
 module.exports = {
   hashPassword,
   comparePassword,
   validateEmailAddress,
   sendEmail,
+  generateSignedUrl,
 };

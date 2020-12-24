@@ -3,91 +3,73 @@
  */
 
 const AWS = require("aws-sdk");
-const shortid = require("shortid");
+const moment = require("moment");
+const utils = require("../utils");
 
 const dynamodb = new AWS.DynamoDB.DocumentClient({
   region: process.env.AWS_REGION,
 });
 
 /**
- * Insert a new image
- * @param {string} image.key bucket key
- * @param {string} image.bucket bucket image is in
- */
-const insert = async (image = {}) => {
-  if (!image.key) {
-    throw new Error(`"key" is required`);
-  }
-  if (!image.bucket) {
-    throw new Error(`"bucket" is required`);
-  }
-
-  const params = {
-    TableName: process.env.imageDb,
-    Item: {
-      hk: shortid.generate(),
-      createdAt: Date.now(),
-      key: image.key,
-      bucket: image.bucket,
-    },
-  };
-
-  await dynamodb.put(params).promise();
-};
-
-/**
  * Get a set of images
+ * @param {string} createdAt dates are in UTC
+ * @param {number} limit
+ * @param {number} skip
+ * @param {string} sort
  */
-const get = async () => {
+const get = async (createdAt = moment(0).toISOString(), limit = undefined, skip = 0, sort = "desc") => {
   const params = {
     TableName: process.env.imageDb,
+    KeyConditionExpression: "hk = :hk and sk > :sk",
+    ExpressionAttributeValues: { ":hk": process.env.bucket, ":sk": createdAt },
+    // Limit: limit ? limit : undefined,
+    ScanIndexForward: sort === "desc" ? false : true,
   };
 
-  let imgs = await dynamodb.scan(params).promise();
+  let response = await dynamodb.query(params).promise();
 
-  if (!imgs.Items || imgs.Items.length <= 0) {
-    imgs = null;
-  } else if (imgs.Items.length > 0) {
-    imgs = imgs.Items.map((img) => ({ ...convertToReadableFormat(img) }));
+  let imgs = response.Items;
+
+  while (response.LastEvaluatedKey) {
+    console.log("running another query");
+    const key = response.LastEvaluatedKey;
+    response = await dynamodb.query({ ExclusiveStartKey: key, ...params }).promise();
+    imgs = imgs.concat(response.Items);
+  }
+
+  if (imgs) {
+    const convertedImages = [];
+    for (const img of imgs) {
+      for (const obj of img.data) {
+        const convertedImg = convertToReadableFormat(img.hk, obj);
+        convertedImages.push(convertedImg);
+      }
+    }
+    if (limit) {
+      imgs = convertedImages.slice(skip, limit);
+    } else {
+      imgs = convertedImages;
+    }
   }
 
   return imgs;
 };
 
 /**
- * Get an image by id
- * @param {string} id
- */
-const getById = async (id) => {
-  if (!id) {
-    throw new Error(`"key" is required`);
-  }
-
-  const params = {
-    TableName: process.env.imageDb,
-    KeyConditionExpression: "hk = :hk",
-    ExpressionAttributeValues: { ":hk": id },
-  };
-
-  let image = await dynamodb.query(params).promise();
-  image = image.Items && image.Items[0] ? convertToReadableFormat(image.Items[0]) : null;
-
-  return image;
-};
-
-/**
  * Convert image record to public format
- * @param {*} image
+ * @param {string} bucket
+ * @param {*} data
  */
-const convertToReadableFormat = (image = {}) => {
-  image.id = image.hk || null;
-  image.createdAt = new Date(image.createdAt).toISOString() || null;
-  if (image.hk) delete image.hk;
-  return image;
+const convertToReadableFormat = (bucket, data = {}) => {
+  return {
+    id: data.id,
+    createdAt: data.createdAt,
+    bucket,
+    key: data.key,
+    url: utils.generateSignedUrl(bucket, data.key),
+  };
 };
 
 module.exports = {
   get,
-  getById,
-  insert,
 };

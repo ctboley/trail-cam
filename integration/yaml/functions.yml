@@ -3,7 +3,7 @@ handler:
   handler: src/handler.handler
   events:
     - s3:
-        bucket: ${self:custom.inboxBucket}
+        bucket: InboxBucket
         event: s3:ObjectCreated:*
         rules:
           - prefix: inbox/

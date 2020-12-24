@@ -19,3 +19,6 @@ inputs:
     tokenSecret: ${env:tokenSecret}
     domain: ${env:domain}
     email: ${env:email}
+    stage: ${env:stage}
+    # bucket: ${cf:trail-cam-integration-${env:stage}.InboxBucket}
+    bucket: ${env:bucket}

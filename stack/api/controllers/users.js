@@ -82,7 +82,7 @@ const get = async (req, res, next) => {
  */
 const addFavorite = async (req, res) => {
   try {
-    if (req.user.favorites.find((obj) => obj.imageId === req.body.id)) {
+    if (req.user.favorites.find((favorite) => favorite.id === req.body.id)) {
       res.status(400).send({ message: "Favorite already exits" });
     } else {
       await users.addFavorite(req.user, req.body);
@@ -99,13 +99,13 @@ const addFavorite = async (req, res) => {
  * @param {*} res
  */
 const removeFavorite = async (req, res) => {
-  const { favoriteId } = req.params;
+  const { id } = req.params;
   try {
-    const fav = req.user.favorites.find((favorite) => favorite.imageId === favoriteId);
+    const fav = req.user.favorites.find((favorite) => favorite.id === id);
     if (!fav) {
       return res.status(404).send({ message: "Not currently a favorite" });
     }
-    await users.removeFavorite(req.user, favoriteId);
+    await users.removeFavorite(req.user, id);
   } catch (error) {
     return res.status(500).send({ error: error.message });
   }

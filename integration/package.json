@@ -12,6 +12,7 @@
   "dependencies": {
     "aws-sdk": "^2.814.0",
     "mailparser": "^3.0.1",
+    "moment": "^2.29.1",
     "shortid": "^2.2.16"
   },
   "devDependencies": {
