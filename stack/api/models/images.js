@@ -17,11 +17,17 @@ const dynamodb = new AWS.DynamoDB.DocumentClient({
  * @param {number} skip
  * @param {string} sort
  */
-const get = async (createdAt = moment().toISOString(), limit = 10, skip = 0, sort = "desc") => {
+const get = async (createdAt, limit = 10, skip = 0, sort = "desc") => {
+  let dt;
+  if (!createdAt) {
+    dt = moment().subtract(1, "hour").toISOString();
+  } else {
+    dt = moment(createdAt).toISOString();
+  }
   const params = {
     TableName: process.env.imageDb,
     KeyConditionExpression: "hk = :hk and sk > :sk",
-    ExpressionAttributeValues: { ":hk": process.env.bucket, ":sk": createdAt },
+    ExpressionAttributeValues: { ":hk": process.env.bucket, ":sk": dt },
     // Limit: limit ? limit : undefined,
     ScanIndexForward: sort === "desc" ? false : true,
   };

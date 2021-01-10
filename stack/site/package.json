@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "moment": "^2.29.1",
     "vue": "^2.6.6",
     "vue-router": "^3.0.1",
     "vuetify": "^2.2.11"
