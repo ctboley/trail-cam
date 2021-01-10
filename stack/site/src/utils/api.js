@@ -5,6 +5,7 @@
 import config from "../config";
 import axios from "axios";
 import Image from "../models/image";
+import moment from "moment";
 
 const instance = axios.create({
   baseURL: config.domains.api,
@@ -15,10 +16,18 @@ const headers = {
   "Content-Type": "application/json"
 };
 
+/**
+ * Formats token a Bearer token Authorization header
+ * @param {string} token
+ * @returns {string}
+ */
 const formatAuth = (token) => ({ Authorization: `Bearer: ${token}` });
 
 /**
  * Register a new user
+ * @param {string} email
+ * @param {string} password
+ * @returns {AxiosResponse}
  */
 export const userRegister = async (email, password) => {
   const response = await instance.post("/user/register", { email, password }, { headers });
@@ -30,6 +39,9 @@ export const userRegister = async (email, password) => {
 
 /**
  * Login a new user
+ * @param {string} email
+ * @param {string} password
+ * @returns {AxiosResponse}
  */
 export const userLogin = async (email, password) => {
   const response = await instance.post("/users/login", { email, password }, { headers });
@@ -40,7 +52,9 @@ export const userLogin = async (email, password) => {
 };
 
 /**
- * userGet
+ * Gets a user
+ * @param {string} token
+ * @returns {AxiosResponse}
  */
 export const userGet = async (token) => {
   const response = await instance.post("/user", null, {
@@ -55,6 +69,7 @@ export const userGet = async (token) => {
 /**
  * Adds an image to a user's favorites
  * @param {Image} image
+ * @returns {AxiosResponse}
  */
 export const addFavorite = async (image) => {
   if (!(image instanceof Image)) {
@@ -70,6 +85,7 @@ export const addFavorite = async (image) => {
 /**
  * Sends a reset password email
  * @param {string} email
+ * @returns {AxiosResponse}
  */
 export const resetPassword = async (email) => {
   const response = await instance.post("/reset_password/user", { email }, { headers });
@@ -84,6 +100,7 @@ export const resetPassword = async (email) => {
  * @param {string} password
  * @param {string} token
  * @param {string} userId
+ * @returns {AxiosResponse}
  */
 export const changePassword = async (password, token, userId) => {
   const response = await instance.post("new_password/user", { password, token, userId }, { headers });
@@ -97,6 +114,7 @@ export const changePassword = async (password, token, userId) => {
  * Removes a user favorite
  * @param {string} imageId
  * @param {string} token
+ * @returns {AxiosResponse}
  */
 export const removeFavorite = async (imageId, token) => {
   const response = await instance.patch(`/user/favorite/${imageId}`, null, {
@@ -112,6 +130,7 @@ export const removeFavorite = async (imageId, token) => {
  * Sends a verification email
  * @param {string} email
  * @param {string} token
+ * @returns {AxiosResponse}
  */
 export const verifyEmail = async (email, token) => {
   const response = await instance.post(
@@ -119,6 +138,34 @@ export const verifyEmail = async (email, token) => {
     { email },
     { headers: { ...formatAuth(token), ...headers } }
   );
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(response.error);
+  }
+  return response;
+};
+
+/**
+ * Get a set of images
+ * @param {string} token
+ * @param {string} createdAt
+ * @param {number} limit
+ * @param {number} skip
+ * @param {string} sort
+ * @returns {AxiosResponse}
+ */
+export const getImages = async (token, createdAt, limit, skip, sort) => {
+  const response = await instance.get("/images", {
+    headers: {
+      ...formatAuth(token),
+      ...headers
+    },
+    params: {
+      createdAt,
+      limit,
+      skip,
+      sort
+    }
+  });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
   }
