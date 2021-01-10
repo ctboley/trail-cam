@@ -32,6 +32,7 @@ inputs:
       Action:
         - ses:SendEmail
         - ses:SendRawEmail
+        - ses:VerifyEmailIdentity
       Resource: "*"
     - Effect: Allow
       Action:

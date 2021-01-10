@@ -53,7 +53,7 @@ app.post(`/users/login`, asyncHandler(users.login));
 
 app.post(`/reset_password/user`, asyncHandler(users.sendPasswordResetEmail));
 
-app.post(`/new_password/:userId/:token`, asyncHandler(users.receiveNewPassword));
+app.post(`/new_password/user`, asyncHandler(users.receiveNewPassword));
 
 if (process.env.stage.toLowerCase() === "dev") {
   app.get(`/test/`, (req, res) => {
@@ -72,6 +72,8 @@ app.post(`/user/favorite`, passport.authenticate("jwt", { session: false }), asy
 app.patch(`/user/favorite/:id`, passport.authenticate("jwt", { session: false }), asyncHandler(users.removeFavorite));
 
 app.get(`/images`, passport.authenticate("jwt", { session: false }), asyncHandler(images.get));
+
+// app.post(`/user/verify_email`, passport.authenticate("jwt", { session: false }), asyncHandler(users.verifyEmail));
 
 /**
  * Routes - Catch-All
