@@ -86,10 +86,20 @@ const generateSignedUrl = (bucket, key, expires = 3600) => {
   return s3.getSignedUrl("getObject", params);
 };
 
+const sendVerificationEmail = async (email = "") => {
+  if (email) {
+    const params = {
+      EmailAddress: email,
+    };
+    await ses.verifyEmailIdentity(params).promise();
+  }
+};
+
 module.exports = {
   hashPassword,
   comparePassword,
   validateEmailAddress,
   sendEmail,
   generateSignedUrl,
+  sendVerificationEmail,
 };

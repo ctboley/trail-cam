@@ -4,7 +4,7 @@
 
 const jwt = require("jsonwebtoken");
 const { users } = require("../models");
-const { comparePassword, sendEmail } = require("../utils");
+const { comparePassword, sendEmail, sendVerificationEmail } = require("../utils");
 
 /**
  * Save
@@ -162,8 +162,7 @@ const sendPasswordResetEmail = async (req, res) => {
  * @param {*} res
  */
 const receiveNewPassword = async (req, res) => {
-  const { userId, token } = req.params;
-  const { password } = req.body;
+  const { userId, token, password } = req.body;
 
   try {
     const user = await users.getById(userId);
@@ -181,6 +180,21 @@ const receiveNewPassword = async (req, res) => {
   res.status(202).send({ message: "Password changed successfully" });
 };
 
+const verifyEmail = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await users.getByEmail(email);
+    if (user) {
+      await sendVerificationEmail(email);
+    } else {
+      return res.status(404).send({ message: "Invalid user" });
+    }
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+  res.status(200).send({ message: "Verification email sent" });
+};
+
 module.exports = {
   register,
   login,
@@ -189,4 +203,5 @@ module.exports = {
   removeFavorite,
   sendPasswordResetEmail,
   receiveNewPassword,
+  verifyEmail,
 };

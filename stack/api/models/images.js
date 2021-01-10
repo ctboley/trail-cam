@@ -17,7 +17,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient({
  * @param {number} skip
  * @param {string} sort
  */
-const get = async (createdAt = moment(0).toISOString(), limit = undefined, skip = 0, sort = "desc") => {
+const get = async (createdAt = moment().toISOString(), limit = 10, skip = 0, sort = "desc") => {
   const params = {
     TableName: process.env.imageDb,
     KeyConditionExpression: "hk = :hk and sk > :sk",
@@ -31,7 +31,6 @@ const get = async (createdAt = moment(0).toISOString(), limit = undefined, skip 
   let imgs = response.Items;
 
   while (response.LastEvaluatedKey) {
-    console.log("running another query");
     const key = response.LastEvaluatedKey;
     response = await dynamodb.query({ ExclusiveStartKey: key, ...params }).promise();
     imgs = imgs.concat(response.Items);
