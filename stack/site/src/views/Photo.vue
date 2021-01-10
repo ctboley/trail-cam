@@ -8,6 +8,7 @@
 <script>
 import Gallery from '@/components/Gallery.vue';
 import Photo from '@/components/Photo.vue';
+
 export default {
   name: 'photo',
   components: {
