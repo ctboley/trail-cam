@@ -1,6 +1,6 @@
 {
-  "short_name": "Serverless Fullstack Application",
-  "name": "Serverless Fullstack Application",
+  "short_name": "Trail Camera",
+  "name": "Trail Camera",
   "icons": [
     {
       "src": "favicon.ico",

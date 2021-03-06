@@ -2,18 +2,18 @@
  * Utils: Back-end
  */
 
-import config from "../config";
-import axios from "axios";
-import Image from "../models/image";
-import moment from "moment";
+import config from '../config';
+import axios from 'axios';
+import Image from '../models/image';
+// import moment from 'moment';
 
 const instance = axios.create({
   baseURL: config.domains.api,
-  responseType: "json"
+  responseType: 'json',
 });
 
 const headers = {
-  "Content-Type": "application/json"
+  'Content-Type': 'application/json',
 };
 
 /**
@@ -30,11 +30,11 @@ const formatAuth = (token) => ({ Authorization: `Bearer: ${token}` });
  * @returns {AxiosResponse}
  */
 export const userRegister = async (email, password) => {
-  const response = await instance.post("/user/register", { email, password }, { headers });
+  const response = await instance.post('/user/register', { email, password }, { headers });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
   }
-  return await response;
+  return response;
 };
 
 /**
@@ -44,7 +44,7 @@ export const userRegister = async (email, password) => {
  * @returns {AxiosResponse}
  */
 export const userLogin = async (email, password) => {
-  const response = await instance.post("/users/login", { email, password }, { headers });
+  const response = await instance.post('/users/login', { email, password }, { headers });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
   }
@@ -57,8 +57,8 @@ export const userLogin = async (email, password) => {
  * @returns {AxiosResponse}
  */
 export const userGet = async (token) => {
-  const response = await instance.post("/user", null, {
-    headers: { ...formatAuth(token), ...headers }
+  const response = await instance.post('/user', null, {
+    headers: { ...formatAuth(token), ...headers },
   });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
@@ -71,11 +71,11 @@ export const userGet = async (token) => {
  * @param {Image} image
  * @returns {AxiosResponse}
  */
-export const addFavorite = async (image) => {
+export const addFavorite = async (token, image) => {
   if (!(image instanceof Image)) {
-    throw new Error("image must be an instance of Image");
+    throw new Error('image must be an instance of Image');
   }
-  const response = await instance.post("/user/favorite", image, { headers: { ...formatAuth(token), ...headers } });
+  const response = await instance.post('/user/favorite', image, { headers: { ...formatAuth(token), ...headers } });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
   }
@@ -88,7 +88,7 @@ export const addFavorite = async (image) => {
  * @returns {AxiosResponse}
  */
 export const resetPassword = async (email) => {
-  const response = await instance.post("/reset_password/user", { email }, { headers });
+  const response = await instance.post('/reset_password/user', { email }, { headers });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
   }
@@ -103,7 +103,7 @@ export const resetPassword = async (email) => {
  * @returns {AxiosResponse}
  */
 export const changePassword = async (password, token, userId) => {
-  const response = await instance.post("new_password/user", { password, token, userId }, { headers });
+  const response = await instance.post('new_password/user', { password, token, userId }, { headers });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
   }
@@ -118,7 +118,7 @@ export const changePassword = async (password, token, userId) => {
  */
 export const removeFavorite = async (imageId, token) => {
   const response = await instance.patch(`/user/favorite/${imageId}`, null, {
-    headers: { ...formatAuth(token), ...headers }
+    headers: { ...formatAuth(token), ...headers },
   });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
@@ -134,7 +134,7 @@ export const removeFavorite = async (imageId, token) => {
  */
 export const verifyEmail = async (email, token) => {
   const response = await instance.post(
-    "/user/verify_email",
+    '/user/verify_email',
     { email },
     { headers: { ...formatAuth(token), ...headers } }
   );
@@ -146,25 +146,23 @@ export const verifyEmail = async (email, token) => {
 
 /**
  * Get a set of images
- * @param {string} token
  * @param {string} createdAt
  * @param {number} limit
  * @param {number} skip
  * @param {string} sort
  * @returns {AxiosResponse}
  */
-export const getImages = async (token, createdAt, limit, skip, sort) => {
-  const response = await instance.get("/images", {
+export const getImages = async (createdAt, limit, skip, sort) => {
+  const response = await instance.get('/images', {
     headers: {
-      ...formatAuth(token),
-      ...headers
+      ...headers,
     },
     params: {
       createdAt,
       limit,
       skip,
-      sort
-    }
+      sort,
+    },
   });
   if (response.status < 200 || response.status >= 300) {
     throw new Error(response.error);
