@@ -1,14 +1,14 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const passport = require("passport");
-const { users, images } = require("./controllers");
+const passport = require('passport');
+const { users, images } = require('./controllers');
 
 /**
  * Configure Passport
  */
 
 try {
-  require("./config/passport")(passport);
+  require('./config/passport')(passport);
 } catch (error) {
   console.log(error);
 }
@@ -19,10 +19,10 @@ try {
 
 // Enable CORS
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("x-powered-by", "serverless-express");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('x-powered-by', 'serverless-express');
   next();
 });
 
@@ -55,9 +55,11 @@ app.post(`/reset_password/user`, asyncHandler(users.sendPasswordResetEmail));
 
 app.post(`/new_password/user`, asyncHandler(users.receiveNewPassword));
 
-if (process.env.stage.toLowerCase() === "dev") {
+app.get(`/images`, asyncHandler(images.get));
+
+if (process.env.stage.toLowerCase() === 'dev') {
   app.get(`/test/`, (req, res) => {
-    res.status(200).send("Request received");
+    res.status(200).send('Request received');
   });
 }
 
@@ -65,13 +67,11 @@ if (process.env.stage.toLowerCase() === "dev") {
  * Routes - Protected
  */
 
-app.post(`/user`, passport.authenticate("jwt", { session: false }), asyncHandler(users.get));
+app.post(`/user`, passport.authenticate('jwt', { session: false }), asyncHandler(users.get));
 
-app.post(`/user/favorite`, passport.authenticate("jwt", { session: false }), asyncHandler(users.addFavorite));
+app.post(`/user/favorite`, passport.authenticate('jwt', { session: false }), asyncHandler(users.addFavorite));
 
-app.patch(`/user/favorite/:id`, passport.authenticate("jwt", { session: false }), asyncHandler(users.removeFavorite));
-
-app.get(`/images`, passport.authenticate("jwt", { session: false }), asyncHandler(images.get));
+app.patch(`/user/favorite/:id`, passport.authenticate('jwt', { session: false }), asyncHandler(users.removeFavorite));
 
 // app.post(`/user/verify_email`, passport.authenticate("jwt", { session: false }), asyncHandler(users.verifyEmail));
 
@@ -80,7 +80,7 @@ app.get(`/images`, passport.authenticate("jwt", { session: false }), asyncHandle
  */
 
 app.get(`/*`, (req, res) => {
-  res.status(404).send("Route not found");
+  res.status(404).send('Route not found');
 });
 
 /**
