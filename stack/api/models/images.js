@@ -2,9 +2,9 @@
  * Model: Images
  */
 
-const AWS = require("aws-sdk");
-const moment = require("moment");
-const utils = require("../utils");
+const AWS = require('aws-sdk');
+const moment = require('moment');
+const utils = require('../utils');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient({
   region: process.env.AWS_REGION,
@@ -12,24 +12,31 @@ const dynamodb = new AWS.DynamoDB.DocumentClient({
 
 /**
  * Get a set of images
- * @param {string} createdAt dates are in UTC
+ * @param {string} startDate dates are in UTC
+ * @param {string} endDate
  * @param {number} limit
  * @param {number} skip
  * @param {string} sort
  */
-const get = async (createdAt, limit = 10, skip = 0, sort = "desc") => {
-  let dt;
-  if (!createdAt) {
-    dt = moment().subtract(1, "hour").toISOString();
+const get = async (startDate, endDate, limit = 10, skip = 0, sort = 'desc') => {
+  if (!startDate) {
+    startDate = moment().subtract(1, 'hour').toISOString();
   } else {
-    dt = moment(createdAt).toISOString();
+    startDate = moment(startDate).toISOString();
+  }
+  if (endDate) {
+    endDate = moment(endDate).toISOString();
   }
   const params = {
     TableName: process.env.imageDb,
-    KeyConditionExpression: "hk = :hk and sk > :sk",
-    ExpressionAttributeValues: { ":hk": process.env.bucket, ":sk": dt },
+    KeyConditionExpression: !endDate
+      ? 'hk = :hk and sk > :startDate'
+      : 'hk = :hk and sk between :startDate and :endDate',
+    ExpressionAttributeValues: !endDate
+      ? { ':hk': process.env.bucket, ':startDate': startDate }
+      : { ':hk': process.env.bucket, ':startDate': startDate, ':endDate': endDate },
     // Limit: limit ? limit : undefined,
-    ScanIndexForward: sort === "desc" ? false : true,
+    ScanIndexForward: sort === 'desc' ? false : true,
   };
 
   let response = await dynamodb.query(params).promise();

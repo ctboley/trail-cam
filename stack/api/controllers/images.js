@@ -2,7 +2,7 @@
  * Controllers: Images
  */
 
-const { images } = require("../models");
+const { images } = require('../models');
 
 /**
  * Get a set of images
@@ -16,11 +16,11 @@ const { images } = require("../models");
  *
  */
 const get = async (req, res) => {
-  const { createdAt, limit, skip, sort } = req.query;
+  const { startDate, endDate, limit, skip, sort } = req.query;
   try {
-    const imgs = await images.get(createdAt, limit, skip, sort);
+    const imgs = await images.get(startDate, endDate, limit, skip, sort);
     if (!imgs) {
-      return res.status(404).send({ message: "No images found" });
+      return res.status(404).send({ message: 'No images found' });
     }
     res.status(200).send(imgs);
   } catch (error) {

@@ -146,19 +146,21 @@ export const verifyEmail = async (email, token) => {
 
 /**
  * Get a set of images
- * @param {string} createdAt
+ * @param {string} startDate
+ * @param {string} endDate
  * @param {number} limit
  * @param {number} skip
  * @param {string} sort
  * @returns {AxiosResponse}
  */
-export const getImages = async (createdAt, limit, skip, sort) => {
+export const getImages = async (startDate, endDate, limit, skip, sort) => {
   const response = await instance.get('/images', {
     headers: {
       ...headers,
     },
     params: {
-      createdAt,
+      startDate,
+      endDate,
       limit,
       skip,
       sort,
